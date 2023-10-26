@@ -1,5 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component } from '@angular/core';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -12,7 +13,7 @@ export class AppComponent {
 
   constructor(public http: HttpClient) { }
 
-  register() {
+  async register() {
     let user = {
       "userName": "NouvelUtilisateur",
       "email": "nouvel@utilisateur.com",
@@ -20,22 +21,22 @@ export class AppComponent {
       "passwordConfirm": "Passw0rd!"
     }
 
-    this.http.post<any>('https://localhost:7011/api/Account/Register', user).subscribe(res => console.log(res));
+    let res = await lastValueFrom(this.http.post<any>('https://localhost:7011/api/Account/Register', user));
+    console.log(res);
   }
 
-  login() {
+  async login() {
     let user = {
       "userName": "NouvelUtilisateur",
       "password": "Passw0rd!",
     }
 
-    this.http.post<any>('https://localhost:7011/api/Account/Login', user).subscribe(res => {
-      console.log(res);
-      localStorage.setItem('token', res.token);
-    });
+    let res = await lastValueFrom(this.http.post<any>('https://localhost:7011/api/Account/Login', user));
+    console.log(res);
+    localStorage.setItem('token', res.token);
   }
 
-  callapi() {
+  async callapi() {
     let token = localStorage.getItem('token');
 
     let httpOptions = {
@@ -45,10 +46,11 @@ export class AppComponent {
       })
     };
 
-    this.http.get<any>('https://localhost:7011/api/cats', httpOptions).subscribe(res => console.log(res));
+    let res = await lastValueFrom(this.http.get<any>('https://localhost:7011/api/cats', httpOptions))
+    console.log(res);
   }
 
-  addcat() {
+  async addcat() {
     let token = localStorage.getItem('token');
 
     let httpOptions = {
@@ -63,7 +65,8 @@ export class AppComponent {
       name: 'Dali'
     }
 
-    this.http.post<any>('https://localhost:7011/api/cats', cat, httpOptions).subscribe(res => console.log(res));
+    let res = await lastValueFrom(this.http.post<any>('https://localhost:7011/api/cats', cat, httpOptions))
+    console.log(res);
   }
 
   logout() {
